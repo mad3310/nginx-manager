@@ -1,0 +1,2 @@
+docker run -i -t --rm --memory="256m" -h nginx-manager-node-1 --name nginx-manager-node-1 letv/nginx-manager:0.0.1 /bin/bash
+docker run -i -t --rm --memory="256m" -h nginx-manager-node-2 --name nginx-manager-node-2 letv/nginx-manager:0.0.1 /bin/bash
