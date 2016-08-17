@@ -32,24 +32,24 @@ def retrieve_node_name():
 def get_dict_from_text(sourceText, keyList):
     totalDict = {}
     resultValue = {}
-    
+
     lineList = sourceText.split('\n')
     for line in lineList:
         if not line:
             continue
-        
+
         pos1 = line.find('=')
         key = line[:pos1]
         value = line[pos1+1:len(line)].strip('\n')
         totalDict.setdefault(key,value)
-        
+
     if keyList == None:
         resultValue = totalDict
     else:
         for key in keyList:
             value = totalDict.get(key)
             resultValue.setdefault(key,value)
-            
+
     return resultValue
 
 def check_leader():
@@ -60,7 +60,7 @@ def check_leader():
     invokeCommand = None
     if ret_str.find('leader') == -1:
         return False
-    
+
     return True
 
 def get_host_ip():

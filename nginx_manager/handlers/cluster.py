@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from base import APIHandler
 from tornado_letv.tornado_basic_auth import require_basic_auth
@@ -11,10 +11,12 @@ Created on 2013-7-21
 
 @author: asus
 '''
+
+
 class Sync_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     def post(self):
         '''
         function: sync cluster info from zk to local properties file
@@ -22,7 +24,7 @@ class Sync_Handler(APIHandler):
         '''
         requestParam = self.get_all_arguments()
         self.cluster_opers.syncExistedCluster(requestParam)
-        
+
         result = {}
         result.setdefault("message", "sync nginx to local successful!")
         self.finish(result)
@@ -30,9 +32,9 @@ class Sync_Handler(APIHandler):
 
 @require_basic_auth
 class Cluster_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     def post(self):
         '''
         function: create cluster and add the first nginx node to cluster, info record to zk
@@ -46,47 +48,47 @@ class Cluster_Handler(APIHandler):
         result.setdefault('data', data)
         result.setdefault("message", "create cluster successfully!")
         self.finish(result)
-        
+
     def get(self):
         '''
         function: retrieve the cluster status
         url example: curl --user root:root "http://localhost:8888/cluster"
         '''
         cluster_status = self.cluster_opers.retrieve_cluster_started_status()
-        
+
         result = {}
-        result.setdefault('data', {'status':cluster_status})
+        result.setdefault('data', {'status': cluster_status})
         if ClusterStatus.STARTED == cluster_status:
             result.setdefault("message", "cluster is available, cluster status is started!")
         elif ClusterStatus.STARTED_PART == cluster_status:
             result.setdefault("message", "cluster is available, but part of nodes are not started!")
         else:
             result.setdefault("message", "cluster is not available, cluster status is stopped!")
-            
+
         self.finish(result)
 
 
 @require_basic_auth
 class Cluster_Start_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     @asynchronous
     def post(self):
         '''
         function: start cluster
         url example: curl --user root:root -d "" "http://localhost:8888/cluster/start"
         '''
-        
+
         result = self.cluster_opers.start()
         self.finish(result)
 
 
-@require_basic_auth    
+@require_basic_auth
 class Cluster_Stop_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     @asynchronous
     def post(self):
         '''
@@ -99,9 +101,9 @@ class Cluster_Stop_Handler(APIHandler):
 
 @require_basic_auth
 class Cluster_Reload_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     @asynchronous
     def post(self):
         '''
@@ -110,13 +112,13 @@ class Cluster_Reload_Handler(APIHandler):
         '''
         result = self.cluster_opers.reload()
         self.finish(result)
-        
-        
+
+
 @require_basic_auth
 class Cluster_Config_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     @asynchronous
     def post(self):
         '''
@@ -130,29 +132,29 @@ class Cluster_Config_Handler(APIHandler):
 
 @require_basic_auth
 class Cluster_Enable_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     def post(self):
         '''
         function: enable proxy cluster
         url example: curl --user root:root -d "" "http://localhost:8888/cluster/enable"
         '''
-        
+
         result = self.cluster_opers.enable()
         self.finish(result)
 
 
 @require_basic_auth
 class Cluster_Disable_Handler(APIHandler):
-    
+
     cluster_opers = ClusterOpers()
-    
+
     def post(self):
         '''
         function: enable proxy cluster
         url example: curl --user root:root -d "" "http://localhost:8888/cluster/enable"
         '''
-        
+
         result = self.cluster_opers.disable()
         self.finish(result)

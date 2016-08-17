@@ -38,7 +38,7 @@ def send_email(to, subject, body, html=None, attachments=[]):
     plain text and HTML parts. Attachments can be added by providing as a
     list of (filename, data) tuples.
     """
-    
+
     fr = options.smtp_from_address
     # convert EmailAddress to pure string
     if isinstance(fr, EmailAddress):
