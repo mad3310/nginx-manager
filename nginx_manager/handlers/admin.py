@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import stat
 import base64
@@ -12,9 +12,9 @@ from utils.exceptions import HTTPAPIError
 
 
 class AdminConf(APIHandler):
-    
+
     confOpers = ConfigFileOpers()
-    
+
     def post(self):
         '''
         function: admin conf
@@ -23,14 +23,14 @@ class AdminConf(APIHandler):
         requestParam = self.get_all_arguments()
         if requestParam != {}:
             self.confOpers.setValue(options.nginx_manager_property, requestParam)
-            
+
         result = {}
         result.setdefault("message", "admin conf successful!")
         self.finish(result)
 
 
 class AdminReset(APIHandler):
-    
+
     def get(self):
         '''
         function: admin reset
@@ -38,34 +38,34 @@ class AdminReset(APIHandler):
         '''
         template_path=os.path.join(options.base_dir, "templates")
         config_path = os.path.join(options.base_dir, "config")
-    
-        clusterPropTemFileName = os.path.join(template_path,"cluster.property.template")
-        dataNodePropTemFileName = os.path.join(template_path,"dataNode.property.template")
-        nclusterManagerPropTemFileName = os.path.join(template_path,"nginx_manager.property.template")
-    
-        clusterPropFileName = os.path.join(config_path,"cluster.property")
-        dataNodePropFileName = os.path.join(config_path,"dataNode.property")
-        nginxManagerPropFileName = os.path.join(config_path,"nginx_manager.property")
-        fileNameList = [clusterPropFileName,dataNodePropFileName,nginxManagerPropFileName]
-    
+
+        clusterPropTemFileName = os.path.join(template_path, "cluster.property.template")
+        dataNodePropTemFileName = os.path.join(template_path, "dataNode.property.template")
+        nclusterManagerPropTemFileName = os.path.join(template_path, "nginx_manager.property.template")
+
+        clusterPropFileName = os.path.join(config_path, "cluster.property")
+        dataNodePropFileName = os.path.join(config_path, "dataNode.property")
+        nginxManagerPropFileName = os.path.join(config_path, "nginx_manager.property")
+        fileNameList = [clusterPropFileName, dataNodePropFileName, nginxManagerPropFileName]
+
         for fileName in fileNameList:
             if os.path.exists(fileName):
                 os.chmod(fileName, stat.S_IWRITE)
                 os.remove(fileName)
-        
+
         shutil.copyfile(clusterPropTemFileName, clusterPropFileName)
         shutil.copyfile(dataNodePropTemFileName, dataNodePropFileName)
         shutil.copyfile(nclusterManagerPropTemFileName, nginxManagerPropFileName)
-   
+
         result = {}
         result.setdefault("message", "admin reset successful!")
         self.finish(result)
 
-        
+
 class AdminUser(APIHandler):
-    
+
     confOpers = ConfigFileOpers()
-    
+
     def post(self):
         '''
         function: create admin user
@@ -78,15 +78,15 @@ class AdminUser(APIHandler):
             value = args[key][0]
             if key == 'adminPassword':
                 value = base64.encodestring(value).strip('\n')
-            requestParam.setdefault(key,value)
+            requestParam.setdefault(key, value)
         if requestParam['adminUser'] == '' or requestParam['adminPassword'] == '':
-            raise HTTPAPIError(status_code=401, error_detail="username or password is empty",\
-                               notification = "direct", \
-                               log_message= "username or password is empty", \
-                               response = "username or password is empty")
+            raise HTTPAPIError(status_code=401, error_detail="username or password is empty",
+                               notification="direct",
+                               log_message="username or password is empty",
+                               response="username or password is empty")
         if requestParam != {}:
             self.confOpers.setValue(options.cluster_property, requestParam)
-        
+
         result = {}
         result.setdefault("message", "creating admin user successful!")
         self.finish(result)
