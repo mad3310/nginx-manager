@@ -32,38 +32,38 @@ class NodeOpers(AbstractOpers):
         '''
         Constructor
         '''
-        
+
     def create(self, params):
         if params == {} or params is None:
             raise UserVisiableException("please set the componentNode info!")
-        
+
         dataNodeInternalPort = params.get('dataNodeInternalPort')
         if dataNodeInternalPort is not None:
             raise UserVisiableException("no need to set the dataNodeInternalPort param!")
-            
+
         zkOper = Common_ZkOpers()
 
         local_uuid = getClusterUUID()
         existCluster = zkOper.existCluster(local_uuid)
         if not existCluster:
             raise UserVisiableException("sync componentCluster info error! please check if sync uuid is right!")
-            
+
         params.setdefault("dataNodeInternalPort", options.port)
         dataNodeExternalPort = params.get('dataNodeExternalPort')
         if dataNodeExternalPort is None or '' == dataNodeExternalPort:
             params.setdefault("dataNodeExternalPort", options.port)
-        
+
         self.confOpers.setValue(options.data_node_property, params)
         dataNodeProprs = self.confOpers.getValue(options.data_node_property)
         zkOper.writeDataNodeInfo(local_uuid, dataNodeProprs)
 
         result = {}
-        result.setdefault("message", "Configuration on this componentNode has been done successfully")    
+        result.setdefault("message", "Configuration on this componentNode has been done successfully")
         return result
-    
+
     def start(self):
         _, ret_val = self.invokeCommand._runSysCmd(options.start_nginx)
-        
+
         result = {}
         if ret_val != 0:
             result.setdefault("message", "start nginx failed")
@@ -72,12 +72,12 @@ class NodeOpers(AbstractOpers):
             zkOper = Common_ZkOpers()
             zkOper.write_started_node(container_name)
             result.setdefault("message", "start nginx successfully")
-        
+
         return result
-    
+
     def stop(self):
         _, ret_val = self.invokeCommand._runSysCmd(options.stop_nginx)
-        
+
         result = {}
         if ret_val != 0:
             result.setdefault("message", "stop nginx failed")
@@ -86,12 +86,12 @@ class NodeOpers(AbstractOpers):
             zkOper = Common_ZkOpers()
             zkOper.remove_started_node(container_name)
             result.setdefault("message", "stop nginx successfully")
-        
+
         return result
-    
+
     def reload(self):
         _, ret_val = self.invokeCommand._runSysCmd(options.reload_nginx)
-        
+
         result = {}
         if ret_val != 0:
             result.setdefault("message", "reload nginx failed")
@@ -101,7 +101,7 @@ class NodeOpers(AbstractOpers):
             zkOper = Common_ZkOpers()
             zkOper.write_started_node(container_name)
         return result
-    
+
     def config(self, params):
 
         _upstream_name = params.get('upstreamName')
@@ -111,47 +111,47 @@ class NodeOpers(AbstractOpers):
         upstream = UpStream(_upstream_name, server_list)
         self.man.save_upstream(upstream)
         self.man.enable_server( os.path.basename(self.man.upstream_file_path) )
-        
+
         server = self.__get_server(_upstream_name)
         filename = '%ssites-available/%s.conf' % (self.base_config_path, _cluster)
         set_file_data(filename, str(server), 'w')
         self.man.enable_server('%s.conf' % _cluster)
         self.invokeCommand._runSysCmd(options.reload_nginx)
-        
+
         result = {}
         result.setdefault("message", "node config upstream successfully")
         return result
 
     def __get_server(self, upstream_name):
-        
+
         server = Server(port=8001, server_names=['webportal-app'],
                         params={'error_page': '500 502 503 504  /50x.html'} )
-        
+
         location = Location('/', params={'proxy_pass': 'http://%s' % upstream_name,
                                          'proxy_set_header': 'Host rds.et.letv.com',
                                          'proxy_redirect': 'off',
                                          'index':'index.html index.htm'})
-        
+
         server.add_location(location=location)
-        
+
         location = Location('= /50x.html', params={'root': '/usr/share/nginx/html'})
         server.add_location(location=location)
-        
+
         return server
 
     def enable(self):
         files = os.listdir(self.man.sites_available)
-        
+
         for _file in files:
             self.man.enable_server(_file)
-        
+
         self.invokeCommand._runSysCmd(options.reload_nginx)
 
     def disable(self):
-        
+
         files = os.listdir(self.man.sites_available)
-        
+
         for _file in files:
             self.man.disable_server(_file)
-        
+
         self.invokeCommand._runSysCmd(options.reload_nginx)

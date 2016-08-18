@@ -3,6 +3,8 @@ Created on Mar 31, 2015
 
 @author: root
 '''
+
+
 class Location(object):
     def __init__(self, location, params):
         super(Location, self).__init__()

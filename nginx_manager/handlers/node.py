@@ -11,9 +11,9 @@ from componentNode.nodeOpers import NodeOpers
 
 @require_basic_auth
 class Node_Handler(APIHandler):
-    
+
     node_opers = NodeOpers()
-    
+
     def post(self):
         '''
         function: add component node to cluster
@@ -26,9 +26,9 @@ class Node_Handler(APIHandler):
 
 @require_basic_auth
 class Node_Start_Handler(APIHandler):
-    
+
     node_opers = NodeOpers()
-    
+
     @asynchronous
     def post(self):
         '''
@@ -41,9 +41,9 @@ class Node_Start_Handler(APIHandler):
 
 @require_basic_auth
 class Node_Stop_Handler(APIHandler):
-    
+
     node_opers = NodeOpers()
-    
+
     def post(self):
         '''
         function: stop node
@@ -55,9 +55,9 @@ class Node_Stop_Handler(APIHandler):
 
 @require_basic_auth
 class Node_Reload_Handler(APIHandler):
-    
+
     node_opers = NodeOpers()
-    
+
     def post(self):
         '''
         function: reload node
@@ -65,13 +65,13 @@ class Node_Reload_Handler(APIHandler):
         '''
         result = self.node_opers.reload()
         self.finish(result)
-        
-        
+
+
 @require_basic_auth
 class Node_Config_Handler(APIHandler):
-    
+
     nodeOpers = NodeOpers()
-    
+
     def post(self):
         '''
         function: set the nginx configuration file, currently, only for upstream
@@ -84,32 +84,33 @@ class Node_Config_Handler(APIHandler):
 
 @require_basic_auth
 class Node_Enable_Handler(APIHandler):
-    
+
     nodeOpers = NodeOpers()
-    
+
     def post(self):
         '''
         function: start or stop nginx proxy other service
         url example: curl -d "" "http://localhost:8888/cluster/node/enable"
         '''
         self.nodeOpers.enable()
-        
+
         result = {}
         result.setdefault("message", "enable proxy successfully")
         self.finish(result)
 
+
 @require_basic_auth
 class Node_Disable_Handler(APIHandler):
-    
+
     nodeOpers = NodeOpers()
-    
+
     def post(self):
         '''
         function: start or stop nginx proxy other service
         url example: curl -d "" "http://localhost:8888/cluster/node/disable"
         '''
         self.nodeOpers.disable()
-        
+
         result = {}
         result.setdefault("message", "disable proxy successfully")
         self.finish(result)

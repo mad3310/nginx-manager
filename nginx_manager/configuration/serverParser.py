@@ -8,6 +8,7 @@ Created on Mar 31, 2015
 @author: root
 '''
 
+
 class ServerParser(object):
     def __init__(self):
         super(ServerParser, self).__init__()

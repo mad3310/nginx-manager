@@ -1,6 +1,6 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
-from tornado.web import RequestHandler,HTTPError
+from tornado.web import RequestHandler, HTTPError
 from tornado import escape
 from tornado.options import options
 
@@ -21,12 +21,13 @@ class BaseHandler(RequestHandler):
             request_param.setdefault(key, args[key][0])
         return request_param
 
+
 class APIHandler(BaseHandler):
     def finish(self, chunk=None, notification=None):
         if chunk is None:
             chunk = {}
 
-        if isinstance(chunk, dict) : 
+        if isinstance(chunk, dict):
             if 'error_code' not in chunk.keys():
                 chunk = {"meta": {"code": 200}, "response": chunk}
             else:
@@ -41,7 +42,7 @@ class APIHandler(BaseHandler):
 
             if isinstance(chunk, dict):
                 chunk = escape.json_encode(chunk)
-                
+
             self._write_buffer = [callback, "(", chunk, ")"] if chunk else []
             super(APIHandler, self).finish()
         else:
@@ -89,14 +90,14 @@ class APIHandler(BaseHandler):
             invokeCommand = InvokeCommand()
             cmd_str = "rpm -qa nginx-manager"
             version_str = invokeCommand._runSysCmd(cmd_str)
-            logging.info("version_str :" + str(version_str)) 
+            logging.info("version_str :" + str(version_str))
             # send email
             subject = "[%s]Internal Server Error " % options.sitename
             body = self.render_string("errors/500_email.html",
                                       exception=exception)
-            
+
             body += "\n" + version_str[0] + "\nip:" + local_ip
-            
+
 #            email_from = "%s <noreply@%s>" % (options.sitename, options.domain)
             if options.send_email_switch:
                 send_email(options.admins, subject, body)
@@ -116,5 +117,3 @@ class APIErrorHandler(APIHandler):
     def prepare(self):
         super(APIErrorHandler, self).prepare()
         raise HTTPAPIError(404)
-    
-    

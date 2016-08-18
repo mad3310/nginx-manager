@@ -10,6 +10,7 @@ from utils.exceptions import NginxConfigurationException
 from configuration.serverParser import ServerParser
 from configuration.upstreamParser import UpstreamParser
 
+
 class ConfigOpers(object):
     def __init__(self, base_conf_location):
         super(ConfigOpers, self).__init__()
@@ -23,7 +24,7 @@ class ConfigOpers(object):
 
         self.sites_available = os.path.join(self.conf_path, 'sites-available')
         self.sites_enabled = os.path.join(self.conf_path, 'sites-enabled')
-        
+
         self.upstream_file_path = os.path.join(self.sites_available, 'upstream.conf')
 
         if not os.path.exists(self.sites_available) or not os.path.exists(self.sites_enabled):
@@ -35,7 +36,7 @@ class ConfigOpers(object):
         self.nginx_binary_path = None
         self._find_nginx_exec()
         self.parser = ServerParser()
-        
+
         self.upstream_parser = UpstreamParser()
 
     def load(self):
@@ -113,12 +114,12 @@ class ConfigOpers(object):
             server['enabled'] = False
         else:
             raise NginxConfigurationException('Server is already disabled')
-        
+
     def save_upstream(self, upstream):
         with open(self.upstream_file_path, 'w') as f:
             f.write(str(upstream))
             f.close()
-        
+
     def get_server_from_upstream(self, upstream):
         if os.path.exists(self.upstream_file_path):
             return self._read_upstream_file(self.upstream_file_path, upstream)
@@ -127,7 +128,7 @@ class ConfigOpers(object):
 
     def reload(self):
         return subprocess.call([self.nginx_binary_path, '-s', 'reload'])
-    
+
     def _read_upstream_file(self, file_path, upstream):
         with open(file_path) as f:
             return {'upstream': upstream, 'servers': self.upstream_parser.parse(f.read()),
@@ -135,14 +136,14 @@ class ConfigOpers(object):
 
     def _read_config_file(self, file_path, enabled):
         with open(file_path) as f:
-#             return {'enabled': enabled, 'server': self.parser.parse(f.read()),
-#                     'conf_file': file_path}
+            #  return {'enabled': enabled, 'server': self.parser.parse(f.read()),
+                    #  'conf_file': file_path}
             return {'enabled': enabled, 'server': f.read(),
                     'conf_file': file_path}
 
     def _find_nginx_exec(self):
         try:
-            #output = subprocess.Popen(['which', 'nginx'])
+            #  output = subprocess.Popen(['which', 'nginx'])
             _output = os.popen('which nginx')
             output = _output.read()
             self.nginx_binary_path = output.rstrip()
