@@ -1,0 +1,1 @@
+sed -i 's/conf.d/sites-enabled/g' /etc/nginx/nginx.conf
